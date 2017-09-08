@@ -1,0 +1,70 @@
+{
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "{{ user `aws_region` }}",
+      "communicator": "winrm",
+      "winrm_username": "Administrator",
+      "winrm_use_ssl": true,
+      "winrm_insecure": true,
+      "vpc_id": "{{ user `vpc_id` }}",
+      "subnet_id": "{{ user `vpc_subnet` }}",
+      "security_group_id": "{{ user `security_group_id` }}",
+      "iam_instance_profile": "packer_build",
+      "source_ami_filter": {
+        "filters": {
+          "name": "{{ user `source_ami_name` }}-*"
+        },
+        "owners": ["{{ user `source_ami_owner` }}"],
+        "most_recent": true
+      },
+      "instance_type": "{{ user `instance_type` }}",
+      "ami_name": "{{ user `build_stage` }}-{{ user `role` }}-{{ user `version` }}.{{ user `build_number` }}{{ user `build_metadata` }}",
+      "ami_users": ["404093710949"],
+      "user_data_file": "files/config/init.ps1.userdata",
+      "launch_block_device_mappings": <%= @metadata['block_device_mapping'].value %>,
+      "run_tags": {
+        "job_code": "{{ user `job_code` }}",
+        "Name": "Packer_Builder-{{ user `build_stage` }}-{{ user `role` }}-{{ user `version` }}.{{ user `build_number` }}{{ user `build_metadata` }}"
+      },
+      "run_volume_tags": {
+        "job_code": "{{ user `job_code` }}",
+        "Name": "Packer_Builder-{{ user `build_stage` }}-{{ user `role` }}-{{ user `version` }}.{{ user `build_number` }}{{ user `build_metadata` }}"
+      },
+      "tags": {
+        "job_code": "{{ user `job_code` }}",
+        "version": "{{ user `version` }}",
+        "build": "{{ user `build_number`}}",
+        "build_metadata": "{{ user `build_metadata`}}",
+        "build_uuid": "{{ user `build_uuid` }}",
+        "os": "{{ user `os_type` }}",
+        "build_stage": "{{ user `build_stage` }}",
+        "Name": "{{ user `build_stage` }}-{{ user `role` }}-{{ user `version` }}.{{ user `build_number` }}{{ user `build_metadata` }}",
+        "app_release": "{{ user `app_release` }}{{ user `build_metadata` }}"
+      }
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type": "powershell",
+      "inline": [
+        "Invoke-WebRequest http://{{user `httpd_server`}}:{{user `httpd_port`}}/cookbooks.zip -OutFile c:/chef/cookbooks.zip -Verbose",
+        "Expand-Archive c:/chef/cookbooks.zip -DestinationPath c:/chef"
+      ]
+    },
+    {
+      "type":              "chef-client",
+      "guest_os_type":     "windows",
+      "server_url":        "http://localhost:8889",
+      "config_template":   "./files/config/client.rb.template",
+      "run_list":          [ "{{ user `chef_run_list` }}" ],
+      "skip_clean_node":   true,
+      "skip_clean_client": true,
+      "skip_install":      true,
+      "json": {
+        "app_release": "{{user `app_release`}}"
+      }
+    }
+  ]
+}

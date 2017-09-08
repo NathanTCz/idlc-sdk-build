@@ -1,0 +1,61 @@
+{
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "region": "{{ user `aws_region` }}",
+      "communicator": "winrm",
+      "winrm_username": "Administrator",
+      "winrm_password": "Aut0m@t0r",
+      "winrm_use_ssl": true,
+      "winrm_insecure": true,
+      "vpc_id": "{{ user `vpc_id` }}",
+      "subnet_id": "{{ user `vpc_subnet` }}",
+      "security_group_id": "{{ user `security_group_id` }}",
+      "iam_instance_profile": "packer_build",
+      "source_ami_filter": {
+        "filters": {
+          "name": "{{ user `source_ami_name` }}*"
+        },
+        "owners": ["{{ user `source_ami_owner` }}"],
+        "most_recent": true
+      },
+      "instance_type": "{{ user `instance_type` }}",
+      "ami_name": "{{ user `build_stage` }}-{{ user `role` }}-{{ user `version` }}.{{ user `build_number` }}",
+      "user_data_file": "files/config/init.ps1.userdata",
+      "run_tags": {
+        "job_code": "{{ user `job_code` }}",
+        "Name": "Packer Builder"
+      },
+      "run_volume_tags": {
+        "job_code": "{{ user `job_code` }}",
+        "Name": "Packer Builder"
+      },
+      "tags": {
+        "job_code": "{{ user `job_code` }}",
+        "version": "{{ user `version` }}",
+        "build": "{{ user `build_number`}}",
+        "build_uuid": "{{ user `build_uuid` }}",
+        "os": "{{ user `os_type` }}",
+        "build_stage": "{{ user `build_stage` }}",
+        "Name": "{{ user `build_stage` }}-{{ user `role` }}-{{ user `version` }}.{{ user `build_number` }}",
+        "source_ami": "{{ user `source_ami_name` }}"
+      }
+    }
+  ],
+
+  "provisioners": [
+    { "type": "powershell", "inline": [ "mkdir {{user `chef_dir`}}" ] },
+    { "type": "file", "source": "./chef/bake/cookbooks", "destination": "{{user `chef_dir`}}/cookbooks" },
+    { "type": "file", "source": "./chef/vendor/cookbooks", "destination": "{{user `chef_dir`}}/vendor/cookbooks" },
+    {
+      "type":              "chef-client",
+      "guest_os_type":     "windows",
+      "install_command":   "powershell.exe -Command \"(New-Object System.Net.WebClient).DownloadFile('https://packages.chef.io/files/stable/chef/12.19.36/windows/2012r2/chef-client-12.19.36-1-x64.msi', 'C:\\Windows\\Temp\\chef.msi');Start-Process 'msiexec' -ArgumentList '/qb /i C:\\Windows\\Temp\\chef.msi' -NoNewWindow -Wait\"",
+      "server_url":        "http://localhost:8889",
+      "config_template":   "./files/config/client.rb.template",
+      "run_list":          [ "{{ user `chef_run_list` }}" ],
+      "skip_clean_node":   true,
+      "skip_clean_client": true
+    }
+  ]
+}
