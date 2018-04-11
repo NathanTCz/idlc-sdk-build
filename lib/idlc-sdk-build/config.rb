@@ -17,8 +17,7 @@ module Idlc::Build
       Idlc::Utility.check_for_creds
 
     rescue Idlc::Utility::MissingCredentials => e
-      err("ERROR: #{e.message}\n")
-      exit 1
+      msg("WARN: #{e.message}\nFalling back to implicit authentication.")
     end
 
     def dump_build_vars
