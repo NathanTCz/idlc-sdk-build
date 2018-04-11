@@ -46,9 +46,13 @@
 
   "provisioners": [
     {
+      "type": "file",
+      "source": "{{user `cookbooks_zip`}}",
+      "destination": "c:/chef/cookbooks.zip"
+    },
+    {
       "type": "powershell",
       "inline": [
-        "Invoke-WebRequest http://{{user `httpd_server`}}:{{user `httpd_port`}}/cookbooks.zip -OutFile c:/chef/cookbooks.zip -Verbose",
         "Expand-Archive c:/chef/cookbooks.zip -DestinationPath c:/chef"
       ]
     },
