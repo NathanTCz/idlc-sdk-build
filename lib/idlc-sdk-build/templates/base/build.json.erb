@@ -11,7 +11,7 @@
       "vpc_id": "{{ user `vpc_id` }}",
       "subnet_id": "{{ user `vpc_subnet` }}",
       "security_group_id": "{{ user `security_group_id` }}",
-      "iam_instance_profile": "packer_build",
+      "iam_instance_profile": "{{ user `iam_instance_profile` }}",
       "source_ami_filter": {
         "filters": {
           "name": "{{ user `source_ami_name` }}*"

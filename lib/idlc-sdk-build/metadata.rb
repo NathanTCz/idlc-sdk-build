@@ -41,11 +41,12 @@ module Idlc
 
         # Optional Defaults
         @attributes['block_device_mapping'] = MetadataAttribute.new('[]')
-        @attributes['job_code'] = MetadataAttribute.new('998')
+        @attributes['job_code'] = MetadataAttribute.new('988')
         @attributes['chef_dir'] = MetadataAttribute.new('c:/windows/temp/packer-chef-client')
-        @attributes['security_group_id'] = MetadataAttribute.new('sg-420b4a39')
-        @attributes['vpc_id'] = MetadataAttribute.new('vpc-e346f484')
-        @attributes['vpc_subnet'] = MetadataAttribute.new('subnet-18b5ed40')
+        @attributes['security_group_id'] = MetadataAttribute.new('sg-9116d1e7')
+        @attributes['vpc_id'] = MetadataAttribute.new('vpc-04e4427f')
+        @attributes['vpc_subnet'] = MetadataAttribute.new('subnet-434f4f27')
+        @attributes['iam_instance_profile'] = MetadataAttribute.new('packer_build')
       end
 
       def load
