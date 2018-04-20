@@ -57,6 +57,12 @@
       ]
     },
     {
+      "type": "powershell",
+      "inline": [
+        "Rename-Computer -NewName {{ user `build_uuid` }}"
+      ]
+    },
+    {
       "type":              "chef-client",
       "guest_os_type":     "windows",
       "server_url":        "http://localhost:8889",
