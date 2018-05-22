@@ -45,8 +45,17 @@
 
   "provisioners": [
     { "type": "powershell", "inline": [ "mkdir {{user `chef_dir`}}" ] },
-    { "type": "file", "source": "./chef/bake/cookbooks", "destination": "{{user `chef_dir`}}/cookbooks" },
-    { "type": "file", "source": "./chef/vendor/cookbooks", "destination": "{{user `chef_dir`}}/vendor/cookbooks" },
+    {
+      "type": "file",
+      "source": "{{user `cookbooks_zip`}}",
+      "destination": "{{user `chef_dir`}}/cookbooks.zip"
+    },
+    {
+      "type": "powershell",
+      "inline": [
+        "Expand-Archive {{user `chef_dir`}}/cookbooks.zip -DestinationPath {{user `chef_dir`}}"
+      ]
+    },
     {
       "type":              "chef-client",
       "guest_os_type":     "windows",
