@@ -53,7 +53,7 @@
     {
       "type": "powershell",
       "inline": [
-        "Expand-Archive {{user `chef_dir`}}/cookbooks.zip -DestinationPath {{user `chef_dir`}}"
+        "Add-Type -AssemblyName System.IO.Compression.FileSystem; [System.IO.Compression.ZipFile]::ExtractToDirectory({{user `chef_dir`}}/cookbooks.zip, {{user `chef_dir`}})"
       ]
     },
     {
