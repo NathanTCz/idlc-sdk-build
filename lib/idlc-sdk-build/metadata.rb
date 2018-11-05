@@ -38,15 +38,15 @@ module Idlc
         @attributes['source_ami_name'] = MetadataAttribute.new(nil, true)
         @attributes['source_ami_owner'] = MetadataAttribute.new(nil, true)
         @attributes['version'] = MetadataAttribute.new(REPO_VERSION, true)
+        @attributes['security_group_id'] = MetadataAttribute.new(ENV['PACKER_BUILD_SG_ID'], true)
+        @attributes['vpc_id'] = MetadataAttribute.new(ENV['PACKER_BUILD_VPC_ID'], true)
+        @attributes['vpc_subnet'] = MetadataAttribute.new(ENV['PACKER_BUILD_SUBNET_ID'], true)
+        @attributes['iam_instance_profile'] = MetadataAttribute.new(ENV['PACKER_BUILD_INSTANCE_PROFILE_NAME'], true)
 
         # Optional Defaults
         @attributes['block_device_mapping'] = MetadataAttribute.new('[]')
         @attributes['job_code'] = MetadataAttribute.new('988')
         @attributes['chef_dir'] = MetadataAttribute.new('c:/windows/temp/packer-chef-client')
-        @attributes['security_group_id'] = MetadataAttribute.new('sg-9116d1e7')
-        @attributes['vpc_id'] = MetadataAttribute.new('vpc-04e4427f')
-        @attributes['vpc_subnet'] = MetadataAttribute.new('subnet-434f4f27')
-        @attributes['iam_instance_profile'] = MetadataAttribute.new('packer_build')
       end
 
       def load
